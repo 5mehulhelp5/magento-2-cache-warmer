@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <blackbird_cachewarmer>
+            <general>
+                <enabled>1</enabled>
+                <async_cachewarmer_enabled>0</async_cachewarmer_enabled>
+                <basic_auth_username></basic_auth_username>
+                <basic_auth_password></basic_auth_password>
+                <concurrency>10</concurrency>
+                <switch_store>0</switch_store>
+                <instances></instances>
+                <customer_credentials></customer_credentials>
+                <not_logged_in_crawl_disabled>0</not_logged_in_crawl_disabled>
+                <default_collector_type></default_collector_type>
+                <slack_webhook_enabled>0</slack_webhook_enabled>
+                <slack_webhook_url></slack_webhook_url>
+            </general>
+            <logging>
+                <log_level>error</log_level>
+            </logging>
+        </blackbird_cachewarmer>
+    </default>
+</config>

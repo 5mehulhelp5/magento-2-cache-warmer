@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <!--suppress InvalidDiTypeInspection -->
+                <item name="blackbird_cachewarmer_warmer_run" xsi:type="object">
+                    Blackbird\CacheWarmer\Console\Command\WarmerRun
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <preference for="Blackbird\CacheWarmer\Api\UrlPoolCollectorInterface" type="Blackbird\CacheWarmer\Model\Service\UrlPoolCollector"/>
+    <preference for="Blackbird\CacheWarmer\Api\WarmerInterface" type="Blackbird\CacheWarmer\Model\Service\Warmer"/>
+    <preference for="Blackbird\CacheWarmer\Api\Data\EntityQueueInterface" type="Blackbird\CacheWarmer\Model\EntityQueue"/>
+    <preference for="Blackbird\CacheWarmer\Api\EntityQueueRepositoryInterface" type="Blackbird\CacheWarmer\Model\EntityQueueRepository"/>
+    <preference for="Blackbird\CacheWarmer\Api\EntityUrlProviderInterface" type="Blackbird\CacheWarmer\Model\EntityUrlProvider\CompositeEntityUrlProvider"/>
+
+    <!-- Entity URL Provider Configuration -->
+    <type name="Blackbird\CacheWarmer\Model\EntityUrlProvider\CompositeEntityUrlProvider">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="catalog_product" xsi:type="object">Blackbird\CacheWarmer\Model\EntityUrlProvider\ProductUrlProvider</item>
+                <item name="catalog_category" xsi:type="object">Blackbird\CacheWarmer\Model\EntityUrlProvider\CategoryUrlProvider</item>
+                <item name="cms_page" xsi:type="object">Blackbird\CacheWarmer\Model\EntityUrlProvider\CmsPageUrlProvider</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Collector Type Service Configuration -->
+    <type name="Blackbird\CacheWarmer\Model\Service\CollectorTypeService">
+        <arguments>
+            <argument name="collectorTypeProviders" xsi:type="array">
+                <item name="default" xsi:type="object">Blackbird\CacheWarmer\Model\CollectorType\DefaultProvider</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\CacheInvalidate\Observer\InvalidateVarnishObserver">
+        <plugin name="add_entity_to_warmer_queue"
+                type="Blackbird\CacheWarmer\Plugin\AddEntityToWarmerQueue"
+                sortOrder="10"/>
+    </type>
+
+    <!-- Logger Configuration -->
+    <type name="Blackbird\CacheWarmer\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">warmer</argument>
+            <argument name="logLevel" xsi:type="object">Blackbird\CacheWarmer\Logger\Config\LoggerConfigReader</argument>
+        </arguments>
+    </type>
+</config>

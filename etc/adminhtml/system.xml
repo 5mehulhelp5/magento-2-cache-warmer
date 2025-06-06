@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="blackbird_cachewarmer" translate="label" sortOrder="140" showInDefault="1" showInWebsite="1"
+                 showInStore="1" canRestore="1">
+            <class>separator-top</class>
+            <label>Cache Warmer</label>
+            <tab>blackbird_extensions</tab>
+            <resource>Blackbird_CacheWarmer::config</resource>
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1"
+                   canRestore="1">
+                <label>General</label>
+                <field id="enabled" translate="label" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable warmer</label>
+                    <comment>Enable warmer for store</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="async_cachewarmer_enabled" translate="label" sortOrder="0" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Enable Async Cache Warmer</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="default_collector_type" translate="label" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Default Collector Type</label>
+                    <comment>Default collector type</comment>
+                    <source_model>Blackbird\CacheWarmer\Model\Config\Source\CollectorType</source_model>
+                </field>
+                <field id="concurrency" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                       showInStore="1" canRestore="1">
+                    <label>Concurrency</label>
+                    <comment>Number of concurrent requests executed in parallel per Store and Customer Group. The total
+                        concurrent requests will be: [concurrency value] x [number of instances] x ([number of customer
+                        credentials + (1 if guest crawling enabled, 0 if disabled)])
+                    </comment>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                </field>
+                <field id="customer_credentials" translate="label" type="text" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Customer Credentials</label>
+                    <comment>Customer credentials for authentication</comment>
+                    <frontend_model>Blackbird\CacheWarmer\Block\Adminhtml\Form\Field\CustomerCredentials</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+                <field id="not_logged_in_crawl_disabled" translate="label" type="select" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Disable Not Logged In Crawl</label>
+                    <comment>Disable crawling for not logged in users</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="switch_store" translate="label" type="select" sortOrder="50" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Switch Store</label>
+                    <comment>Enable store switching with magento store switcher controller. Enable this if multiple
+                        stores have the same url.
+                    </comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="instances" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
+                       showInStore="1" canRestore="1">
+                    <label>Instances</label>
+                    <comment>List of IPs, separated by ",". Add the list of local instances Ips if you have a multi-front magento architecture.</comment>
+                </field>
+                <field id="basic_auth_username" translate="label" type="text" sortOrder="70" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Basic Auth Username</label>
+                    <comment>Username for basic authentication</comment>
+                </field>
+                <field id="basic_auth_password" translate="label" type="obscure" sortOrder="80" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Basic Auth Password</label>
+                    <comment>Password for basic authentication</comment>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="slack_webhook_enabled" translate="label" type="select" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable Slack Webhook Notifications</label>
+                    <comment>Enable notifications to Slack when cache warming encounters errors</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="slack_webhook_url" translate="label" type="text" sortOrder="100" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Slack Webhook URL</label>
+                    <comment>URL of the Slack webhook to send notifications to</comment>
+                    <depends>
+                        <field id="slack_webhook_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="logging" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1"
+                   canRestore="1">
+                <label>Logging</label>
+                <field id="log_level" translate="label" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Log Level</label>
+                    <comment>Select the log level for warmer.log. Messages with this level and higher will be logged.</comment>
+                    <source_model>Blackbird\CacheWarmer\Model\Config\Source\LogLevel</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

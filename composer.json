@@ -1,0 +1,22 @@
+{
+    "name": "blackbird/module-cache-warmer",
+    "version": "1.0.0",
+    "description": "A Magento 2 module that improves store performance by automatically warming cache through intelligent page crawling and async refresh mechanisms.",
+    "type": "magento2-module",
+    "require": {
+        "magento/framework": "*",
+        "blackbird/extensions-core": ">=100.0.9",
+        "php": "^8.1"
+    },
+    "license": [
+        "MIT"
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Blackbird\\CacheWarmer\\": ""
+        }
+    }
+}

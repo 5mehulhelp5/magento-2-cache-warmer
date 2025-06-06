@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="blackbird_cachewarmer_process_entity_cache_refresh_queue" instance="Blackbird\CacheWarmer\Cron\ProcessEntityCacheRefreshQueue" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+        <job name="blackbird_cachewarmer_cleanup_old_entries" instance="Blackbird\CacheWarmer\Cron\CleanupOldEntries" method="execute">
+            <schedule>0 0 * * *</schedule>
+        </job>
+        <job name="blackbird_cachewarmer_warm_full_page_cache" instance="Blackbird\CacheWarmer\Cron\WarmFullPageCache" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+    </group>
+</config>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="adminhtml_cache_flush_system">
+        <observer name="blackbird_cachewarmer_flush_system" instance="Blackbird\CacheWarmer\Observer\CacheFlushObserver" />
+    </event>
+    <event name="adminhtml_cache_flush_all">
+        <observer name="blackbird_cachewarmer_flush_all" instance="Blackbird\CacheWarmer\Observer\CacheFlushObserver" />
+    </event>
+</config>

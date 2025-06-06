@@ -1,0 +1,20 @@
+{
+    "blackbird_cachewarmer_entity_queue": {
+        "column": {
+            "entity_id": true,
+            "target_entity_id": true,
+            "entity_type": true,
+            "store_id": true,
+            "status": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "IDX_8660BB5D7C3C513D36004CA3F9021519": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "BLACKBIRD_CACHEWARMER_ENTITY_QUEUE_STORE_ID_STORE_STORE_ID": true
+        }
+    }
+}
