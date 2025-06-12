@@ -197,20 +197,6 @@ class Warmer implements WarmerInterface
         string $customerUsername = null,
         string $customerPassword = null
     ): Client {
-        $defaultClientConfig = [];
-        if (isset($ip)) {
-            $defaultClientConfig['curl'][CURLOPT_RESOLVE] = $this->getDnsResolutionConfig($ip);
-        }
-
-        if ($this->options->isBasicAuthEnabled()) {
-            $defaultClientConfig['auth'] = [
-                $this->options->getBasicAuthUsername(),
-                $this->options->getBasicAuthPassword(),
-            ];
-        }
-
-        $this->clientFactory->setDefaultConfig($defaultClientConfig);
-
         $cookieJar = new CookieJar();
         if (isset($customerUsername) && isset($customerPassword)) {
             $cookieJar = $this->login($cookieJar, $customerUsername, $customerPassword);
@@ -220,13 +206,38 @@ class Warmer implements WarmerInterface
             $cookieJar = $this->switchStore($cookieJar);
         }
 
-        return $this->clientFactory->create(
-            [
-                'cookies'         => $cookieJar,
-                'http_errors'     => false,
-                'allow_redirects' => false,
-            ]
+        $config = [
+            'cookies'         => $cookieJar,
+            'http_errors'     => false,
+            'allow_redirects' => false,
+        ];
+
+        if (isset($ip)) {
+            $config['curl'][CURLOPT_RESOLVE] = $this->getDnsResolutionConfig($ip);
+        }
+
+        return $this->createClient(
+            $config
         );
+    }
+
+    /**
+     * @param array $config
+     * @return Client
+     */
+    protected function createClient(array $config = []): Client
+    {
+        $defaultClientConfig = [];
+        if ($this->options->isBasicAuthEnabled()) {
+            $defaultClientConfig['auth'] = [
+                $this->options->getBasicAuthUsername(),
+                $this->options->getBasicAuthPassword(),
+            ];
+        }
+
+        $this->clientFactory->setDefaultConfig($defaultClientConfig);
+
+        return $this->clientFactory->create($config);
     }
 
 
@@ -256,7 +267,7 @@ class Warmer implements WarmerInterface
      */
     protected function switchStore(CookieJar $cookieJar): CookieJar
     {
-        $client    = $this->clientFactory->create(['cookies' => $cookieJar]);
+        $client    = $this->createClient(['cookies' => $cookieJar]);
         $storeCode = $this->options->getStore()->getCode();
 
         // Endpoint for switching the store view
@@ -293,7 +304,7 @@ class Warmer implements WarmerInterface
      */
     protected function login(CookieJar $cookieJar, string $customerUsername, string $customerPassword): CookieJar
     {
-        $client = $this->clientFactory->create(['cookies' => $cookieJar]);
+        $client = $this->createClient(['cookies' => $cookieJar]);
         // Authenticate the user (example: login request)
         $loginUrl  = $this->urlBuilder->getUrl('customer/account/loginPost/');
         $loginData = [
@@ -380,7 +391,7 @@ class Warmer implements WarmerInterface
 
         try {
             $client    = $this->clientFactory->create();
-            $storeInfo = $this->options->getStore()->getCode();
+            $storeInfo = sprintf("%s ( %s )",$this->options->getStore()->getCode(), $this->options->getStore()->getBaseUrl());
 
             $payload = json_encode(
                 [
