@@ -3,6 +3,8 @@
 namespace Blackbird\CacheWarmer\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Encryption\Encryptor;
+use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\ScopeInterface;
 
@@ -11,6 +13,9 @@ class Config
     // phpcs:disable
 
     public const BLACKBIRD_CACHEWARMER_GENERAL_ENABLED = "blackbird_cachewarmer/general/enabled";
+
+
+    public const BLACKBIRD_CACHEWARMER_GENERAL_BASIC_AUTH_ENABLE = 'blackbird_cachewarmer/general/basic_auth_enabled';
 
     public const BLACKBIRD_CACHEWARMER_GENERAL_BASIC_AUTH_USERNAME = 'blackbird_cachewarmer/general/basic_auth_username';
 
@@ -38,7 +43,8 @@ class Config
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        protected ScopeConfigInterface $scopeConfig
+        protected ScopeConfigInterface $scopeConfig,
+        protected EncryptorInterface $encryptor
     ) {
     }
 
@@ -127,6 +133,19 @@ class Config
 
     /**
      * @param StoreInterface|null $getStore
+     * @return bool
+     */
+    public function isBasicAuthEnabled(?StoreInterface $getStore): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::BLACKBIRD_CACHEWARMER_GENERAL_BASIC_AUTH_ENABLE,
+            ScopeInterface::SCOPE_STORE,
+            $getStore->getCode()
+        );
+    }
+
+    /**
+     * @param StoreInterface|null $getStore
      * @return string|null
      */
     public function getBasicAuthUsername(?StoreInterface $getStore): ?string
@@ -144,11 +163,15 @@ class Config
      */
     public function getBasicAuthPassword(?StoreInterface $getStore): ?string
     {
-        return $this->scopeConfig->getValue(
+        $password = $this->scopeConfig->getValue(
             self::BLACKBIRD_CACHEWARMER_GENERAL_BASIC_AUTH_PASSWORD,
             ScopeInterface::SCOPE_STORE,
             $getStore->getCode()
         );
+        if(empty($password)) {
+            return null;
+        }
+        return $this->encryptor->decrypt($password);
     }
 
     /**

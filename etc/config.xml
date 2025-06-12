@@ -6,6 +6,7 @@
             <general>
                 <enabled>1</enabled>
                 <async_cachewarmer_enabled>0</async_cachewarmer_enabled>
+                <basic_auth_enabled>0</basic_auth_enabled>
                 <basic_auth_username></basic_auth_username>
                 <basic_auth_password></basic_auth_password>
                 <concurrency>10</concurrency>

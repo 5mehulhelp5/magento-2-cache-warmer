@@ -84,7 +84,7 @@ class WarmerOptions
      */
     public function isBasicAuthEnabled(): bool
     {
-        return $this->getBasicAuthUsername() && $this->getBasicAuthPassword();
+        return $this->basicAuthEnabled ?? $this->config->isBasicAuthEnabled($this->getStore());
     }
 
     /**
