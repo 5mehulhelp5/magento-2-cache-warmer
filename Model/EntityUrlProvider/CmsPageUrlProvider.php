@@ -30,7 +30,7 @@ class CmsPageUrlProvider implements EntityUrlProviderInterface
     /**
      * @inheritDoc
      */
-    public function getUrl(int $entityId, int $storeId): string
+    public function getUrl(int $entityId, int $storeId): array
     {
         // Start store emulation
         $this->storeEmulation->startEnvironmentEmulation($storeId);
@@ -40,7 +40,7 @@ class CmsPageUrlProvider implements EntityUrlProviderInterface
             $page = $this->pageRepository->getById($entityId);
             $pageUrl = $this->url->getUrl($page->getIdentifier());
 
-            return $pageUrl;
+            return [$pageUrl];
         } finally {
             // Stop store emulation
             $this->storeEmulation->stopEnvironmentEmulation();

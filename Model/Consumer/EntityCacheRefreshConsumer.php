@@ -93,21 +93,31 @@ class EntityCacheRefreshConsumer
                         throw new NoSuchEntityException(__('No URL provider found for entity type "%1"', $entityType));
                     }
 
-                    // Get entity URL
-                    $entityUrl = $this->entityUrlProvider->getUrlForType($targetEntityId, $entityType, $storeId);
+                    // Get entity URLs
+                    $entityUrls = $this->entityUrlProvider->getUrlForType($targetEntityId, $entityType, $storeId);
 
-                    // Add URL to the batch grouped by store
+                    // Add URLs to the batch grouped by store
                     if (!isset($urlsByStore[$storeId])) {
                         $urlsByStore[$storeId] = [];
                     }
-                    $urlsByStore[$storeId][$itemId] = $entityUrl;
 
-                    $this->logger->info('Added URL to batch for warming', [
+                    foreach ($entityUrls as $url) {
+                        $urlsByStore[$storeId][$itemId][] = $url;
+                    }
+
+
+                    $this->logger->info('Added URLs to batch for warming', [
                         'entity_id' => $targetEntityId,
                         'entity_type' => $entityType,
                         'store_id' => $storeId,
-                        'url' => $entityUrl
+                        'urls' => $entityUrls,
+                        'count' => count($entityUrls)
                     ]);
+
+                    if(empty($entityUrls)){
+                        $queueItem->setStatus(EntityQueueInterface::STATUS_COMPLETE);
+                        $this->entityQueueRepository->save($queueItem);
+                    }
                 } catch (NoSuchEntityException $e) {
                     $this->logger->error('Entity not found', [
                         'entity_id' => $targetEntityId,
@@ -120,7 +130,7 @@ class EntityCacheRefreshConsumer
                         'item' => $queueItem,
                         'error' => $e->getMessage()
                     ];
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $this->logger->error('Error getting URL for entity', [
                         'entity_id' => $targetEntityId,
                         'entity_type' => $entityType,
@@ -133,7 +143,7 @@ class EntityCacheRefreshConsumer
                         'error' => $e->getMessage()
                     ];
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->logger->error('Error processing queue item', [
                     'queue_id' => $queueItem->getEntityId(),
                     'error' => $e->getMessage()
@@ -146,7 +156,7 @@ class EntityCacheRefreshConsumer
             try {
                 $errorData['item']->setStatus(EntityQueueInterface::STATUS_ERROR);
                 $this->entityQueueRepository->save($errorData['item']);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->logger->error('Error updating queue item status', [
                     'queue_id' => $errorData['item']->getEntityId(),
                     'error' => $e->getMessage()
@@ -174,9 +184,21 @@ class EntityCacheRefreshConsumer
                 ])
             ]);
 
-            $results = $warmer->warmUrls(
-                array_values($urls)
-            );
+            // Flatten the array of URL arrays
+            $flattenedUrls = [];
+            $urlMapping = []; // Map flattened index back to original item ID and URL index
+
+            foreach ($urls as $itemId => $itemUrls) {
+                foreach ($itemUrls as $urlIndex => $url) {
+                    $flattenedUrls[] = $url;
+                    $urlMapping[] = [
+                        'item_id' => $itemId,
+                        'url_index' => $urlIndex
+                    ];
+                }
+            }
+
+            $results = $warmer->warmUrls($flattenedUrls);
             $urlsKeys = array_keys($urls);
 
             $statuses = [];
@@ -201,7 +223,7 @@ class EntityCacheRefreshConsumer
                             'code' => $code
                         ]);
                     }
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $this->logger->error('Error updating queue item status', [
                         'queue_id' => $queueItems[$itemId]->getEntityId(),
                         'url' => $urls[$itemId],

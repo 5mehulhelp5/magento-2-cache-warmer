@@ -31,7 +31,7 @@ class CategoryUrlProvider implements EntityUrlProviderInterface
     /**
      * @inheritDoc
      */
-    public function getUrl(int $entityId, int $storeId): string
+    public function getUrl(int $entityId, int $storeId): array
     {
         // Start store emulation
         $this->storeEmulation->startEnvironmentEmulation($storeId);
@@ -41,7 +41,7 @@ class CategoryUrlProvider implements EntityUrlProviderInterface
             $category = $this->categoryRepository->get($entityId, $storeId);
             $categoryUrl = $category->getUrl();
 
-            return $categoryUrl;
+            return [$categoryUrl];
         } finally {
             // Stop store emulation
             $this->storeEmulation->stopEnvironmentEmulation();

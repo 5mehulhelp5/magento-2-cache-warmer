@@ -29,21 +29,21 @@ class CompositeEntityUrlProvider implements EntityUrlProviderInterface
     /**
      * @inheritDoc
      */
-    public function getUrl(int $entityId, int $storeId): string
+    public function getUrl(int $entityId, int $storeId): array
     {
         throw new NoSuchEntityException(__('Entity type must be specified when using the composite provider'));
     }
 
     /**
-     * Get the URL for an entity with a specific type
+     * Get the URLs for an entity with a specific type
      *
      * @param int $entityId The ID of the entity
      * @param string $entityType The entity type
      * @param int $storeId The store ID
-     * @return string The URL of the entity
+     * @return array The URLs of the entity
      * @throws NoSuchEntityException If no provider supports the entity type or the entity does not exist
      */
-    public function getUrlForType(int $entityId, string $entityType, int $storeId): string
+    public function getUrlForType(int $entityId, string $entityType, int $storeId): array
     {
         foreach ($this->providers as $provider) {
             if ($provider->supports($entityType)) {

@@ -12,14 +12,14 @@ use Magento\Framework\Exception\NoSuchEntityException;
 interface EntityUrlProviderInterface
 {
     /**
-     * Get the URL for an entity
+     * Get the URLs for an entity
      *
      * @param int $entityId The ID of the entity
      * @param int $storeId The store ID
-     * @return string The URL of the entity
+     * @return array The URLs of the entity
      * @throws NoSuchEntityException If the entity does not exist
      */
-    public function getUrl(int $entityId, int $storeId): string;
+    public function getUrl(int $entityId, int $storeId): array;
 
     /**
      * Check if this provider supports the given entity type
