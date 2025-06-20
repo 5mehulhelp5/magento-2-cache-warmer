@@ -42,7 +42,6 @@ class WarmerRun extends Command
         protected ClientFactory         $clientFactory,
         ?string                         $name = null
     ) {
-        $this->state->setAreaCode('adminhtml');
         parent::__construct($name);
     }
 
@@ -107,7 +106,7 @@ class WarmerRun extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-
+        $this->state->setAreaCode('adminhtml');
         [$result, $duration] = $this->measureDuration(function () use ($input, $output) {
             $results = [];
 
