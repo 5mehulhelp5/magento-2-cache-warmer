@@ -34,6 +34,7 @@
         <arguments>
             <argument name="collectorTypeProviders" xsi:type="array">
                 <item name="default" xsi:type="object">Blackbird\CacheWarmer\Model\CollectorType\DefaultProvider</item>
+                <item name="all" xsi:type="object">Blackbird\CacheWarmer\Model\CollectorType\AllProvider</item>
             </argument>
         </arguments>
     </type>

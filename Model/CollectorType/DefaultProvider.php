@@ -32,7 +32,7 @@ class DefaultProvider implements CollectorTypeProviderInterface
     {
         return [
             'sitemap' => [
-                'sort_order' => 10,
+                'sort_order' => 30,
                 'class' => $this->sitemapUrlCollector,
                 'label' => __('Sitemap')
             ],

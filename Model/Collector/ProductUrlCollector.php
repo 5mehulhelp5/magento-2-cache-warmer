@@ -3,6 +3,7 @@
 namespace Blackbird\CacheWarmer\Model\Collector;
 
 use Blackbird\CacheWarmer\Api\UrlCollectorInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
@@ -58,11 +59,22 @@ class ProductUrlCollector implements UrlCollectorInterface
 
         // Get URLs directly from the sorted collection
         foreach ($productCollection as $product) {
-            $productUrls[] = $this->productHelper->getProductUrl($product);
+            foreach ($this->getUrlsFromProduct($product) as $url) {
+                $productUrls[] = $url;
+            }
         }
 
         $this->storeEmulation->stopEnvironmentEmulation();
         return $productUrls;
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @return array
+     */
+    public function getUrlsFromProduct(ProductInterface $product):array
+    {
+        return [$this->productHelper->getProductUrl($product)];
     }
 
     /**
@@ -92,12 +104,16 @@ class ProductUrlCollector implements UrlCollectorInterface
         // Join with catalog_product_super_link table to count children for configurable products
         $linkTable = $productCollection->getTable('catalog_product_super_link');
 
+        $idFieldName =  $productCollection->getProductEntityMetadata()->getLinkField();
+
         // Add a left join to count children
         $productCollection->getSelect()->joinLeft(
             ['super_link' => $linkTable],
-            'e.entity_id = super_link.parent_id',
-            ['children_count' => new \Zend_Db_Expr('COUNT(super_link.product_id)')]
-        )->group('e.entity_id')
+            "e.{$idFieldName} = super_link.parent_id",
+            [
+                'children_count' => new \Zend_Db_Expr('COUNT(super_link.product_id)'),
+            ]
+        )->group("e.{$idFieldName}")
         ->order('children_count DESC');
 
         return $productCollection;

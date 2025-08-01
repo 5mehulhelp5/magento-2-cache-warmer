@@ -5,6 +5,7 @@
         <blackbird_cachewarmer>
             <general>
                 <enabled>1</enabled>
+                <default_collector_type>all</default_collector_type>
                 <async_cachewarmer_enabled>0</async_cachewarmer_enabled>
                 <basic_auth_enabled>0</basic_auth_enabled>
                 <basic_auth_username></basic_auth_username>

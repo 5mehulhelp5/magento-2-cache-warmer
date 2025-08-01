@@ -6,6 +6,7 @@ namespace Blackbird\CacheWarmer\Model\EntityUrlProvider;
 
 use Blackbird\CacheWarmer\Api\Data\EntityQueueInterface;
 use Blackbird\CacheWarmer\Api\EntityUrlProviderInterface;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Helper\Product as ProductHelper;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
@@ -45,7 +46,6 @@ class ProductUrlProvider implements EntityUrlProviderInterface
 
         try {
             $urls = [];
-            $visibleInSiteIds = $this->productVisibility->getVisibleInSiteIds();
 
             // Get product URL using collection for better performance
             $productCollection = $this->productCollectionFactory->create()
@@ -58,9 +58,8 @@ class ProductUrlProvider implements EntityUrlProviderInterface
 
             $product = $productCollection->getFirstItem();
 
-            // Check if product is visible
-            if ($product->getId() && in_array($product->getVisibility(), $visibleInSiteIds)) {
-                $productUrl = $this->productHelper->getProductUrl($product);
+
+            foreach ($this->getUrlsFromProduct($product) as $url) {
                 $urls[] = $productUrl;
             }
 
@@ -78,10 +77,8 @@ class ProductUrlProvider implements EntityUrlProviderInterface
 
                 // Process each parent product
                 foreach ($parentProductCollection as $parentProduct) {
-                    // Check if parent product is visible
-                    if (in_array($parentProduct->getVisibility(), $visibleInSiteIds)) {
-                        $parentUrl = $this->productHelper->getProductUrl($parentProduct);
-                        $urls[] = $parentUrl;
+                    foreach ($this->getUrlsFromParentProduct($product, $parentProduct) as $url) {
+                        $urls[] = $productUrl;
                     }
                 }
             }
@@ -91,6 +88,32 @@ class ProductUrlProvider implements EntityUrlProviderInterface
             // Stop store emulation
             $this->storeEmulation->stopEnvironmentEmulation();
         }
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @return array
+     */
+    public function getUrlsFromProduct(ProductInterface $product):array
+    {
+        // Check if product is visible
+        if ($product->getId() && in_array($product->getVisibility(),  $this->productVisibility->getVisibleInSiteIds())) {
+            return [$this->productHelper->getProductUrl($product)];
+        }
+        return [];
+    }
+
+    /**
+     * @param ProductInterface $product
+     * @param ProductInterface $parentProduct
+     * @return array
+     */
+    public function getUrlsFromParentProduct(ProductInterface $product, ProductInterface $parentProduct):array
+    {
+        if (in_array($parentProduct->getVisibility(), $this->productVisibility->getVisibleInSiteIds())) {
+            return [$this->productHelper->getProductUrl($parentProduct)];
+        }
+        return [];
     }
 
     /**
