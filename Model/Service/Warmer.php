@@ -53,6 +53,7 @@ class Warmer implements WarmerInterface
      */
     public function warmUrls(array $urls): array
     {
+        $urls = array_values($urls);
         $results = [];
         $promises = [];
         $instances = $this->getInstances();
@@ -97,30 +98,31 @@ class Warmer implements WarmerInterface
                                 $statusCode = $response->getStatusCode();
                                 $statuses[$index] = $statusCode;
                                 $duration = $durations[$index] ?? "N/A";
+                                $url = $requestUrls[$index] ?? "N/A";
                                 if ($statusCode >= 200 && $statusCode < 300) {
                                     $this->logMessage(sprintf(
                                         '%s/%s %s success in %s ms with status %d',
-                                        $index,
+                                        $index +1 ,
                                         $total,
-                                        $requestUrls[$index],
+                                        $url,
                                         $duration,
                                         $statusCode
                                     ));
                                 } elseif ($statusCode < 500) {
                                     $this->logWarning(sprintf(
                                         '%s/%s %s warning in %s ms with status %d',
-                                        $index,
+                                        $index +1 ,
                                         $total,
-                                        $requestUrls[$index],
+                                        $url,
                                         $duration,
                                         $statusCode
                                     ));
                                 } else {
                                     $this->logError(sprintf(
                                         '%s/%s %s error in %s ms with status %d',
-                                        $index,
+                                        $index +1 ,
                                         $total,
-                                        $requestUrls[$index],
+                                        $url,
                                         $duration,
                                         $statusCode
                                     ));
@@ -129,11 +131,12 @@ class Warmer implements WarmerInterface
                             'rejected' => function ($reason, $index) use (&$requestUrls, &$total, &$statuses, &$durations) {
                                 $statuses[$index] = false;
                                 $duration = $durations[$index] ?? "N/A";
+                                $url = $requestUrls[$index] ?? "N/A";
                                 $this->logError(sprintf(
                                     '%s/%s %s failed in %s ms : %s',
-                                    $index,
+                                    $index +1,
                                     $total,
-                                    $requestUrls[$index],
+                                    $url,
                                     $duration,
                                     $reason
                                 ));
