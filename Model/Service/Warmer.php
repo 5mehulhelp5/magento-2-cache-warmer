@@ -196,9 +196,9 @@ class Warmer implements WarmerInterface
      * @throws UrlException
      */
     protected function getCrawlClient(
-        string $ip = null,
-        string $customerUsername = null,
-        string $customerPassword = null
+        ?string $ip = null,
+        ?string $customerUsername = null,
+        ?string $customerPassword = null
     ): Client {
         $cookieJar = new CookieJar();
         if (isset($customerUsername) && isset($customerPassword)) {

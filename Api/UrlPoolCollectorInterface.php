@@ -24,5 +24,5 @@ interface UrlPoolCollectorInterface
      * @return string[] List of collected URLs
      * @throws InvalidArgumentException If the specified collector type is not supported
      */
-    public function collectUrls(array $stores, string $type = null): array;
+    public function collectUrls(array $stores, ?string $type = null): array;
 }

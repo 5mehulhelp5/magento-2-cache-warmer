@@ -20,7 +20,7 @@ class UrlPoolCollector implements UrlPoolCollectorInterface
      * @inheritDoc
      * @throws InvalidArgumentException
      */
-    public function collectUrls(array $stores, string $type = null): array
+    public function collectUrls(array $stores, ?string $type = null): array
     {
         if (!empty($type)) {
             return $this->getUrlCollector($type)->collectUrls($stores);
